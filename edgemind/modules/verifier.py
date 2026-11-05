@@ -1,4 +1,4 @@
-"""Module 5: checks structure; never claims mock data is factual validation."""
+"""Check execution status without misrepresenting mock output."""
 from ..state import EdgeState
 
 
@@ -8,6 +8,8 @@ def verify(state: EdgeState) -> dict:
         report = {'status': 'FAILED', 'explanation': result['error'] or 'Tool failed'}
     elif result['status'] == 'not_run':
         report = {'status': 'BLOCKED', 'explanation': 'No valid execution path available'}
+    elif result['status'] == 'completed':
+        report = {'status': 'COMPLETED', 'explanation': 'Model returned a non-empty response; factual accuracy not independently established.'}
     else:
         report = {
             'status': 'SIMULATED',
