@@ -25,3 +25,20 @@ jobs:
       - run: npm --prefix webview-ui ci
       - run: npm --prefix webview-ui run build
       - run: node --check extension.js
+  package-vsix:
+    runs-on: ubuntu-latest
+    needs: [python-tests, webview-build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm --prefix webview-ui ci
+      - run: npm --prefix webview-ui run build
+      - run: npm install --no-save --no-package-lock @vscode/vsce
+      - run: npx vsce package --no-dependencies --allow-missing-repository
+      - uses: actions/upload-artifact@v4
+        with:
+          name: edgemind-vsix
+          path: '*.vsix'
+          if-no-files-found: error
