@@ -9,6 +9,7 @@ const { spawn } = require('child_process');
 
 const IGNORES = '**/{node_modules,.git,dist,build,.venv,venv,.next,coverage}/**';
 let serverProcess;
+let backendPromise;
 let apiPort;
 let token;
 let output;
@@ -50,7 +51,17 @@ function freePort() {
 }
 
 async function startBackend(context) {
-  if (serverProcess && !serverProcess.killed) return;
+  if (backendPromise) return backendPromise;
+  backendPromise = launchBackend(context);
+  try { await backendPromise; }
+  catch (error) {
+    backendPromise = undefined;
+    if (serverProcess) serverProcess.kill();
+    throw error;
+  }
+}
+
+async function launchBackend(context) {
   apiPort = await freePort();
   token = crypto.randomBytes(32).toString('hex');
   const python = vscode.workspace.getConfiguration('edgemind').get('pythonPath') || 'python';
@@ -62,7 +73,7 @@ async function startBackend(context) {
   serverProcess.stdout.on('data', chunk => output.append(chunk.toString()));
   serverProcess.stderr.on('data', chunk => output.append(chunk.toString()));
   serverProcess.on('error', err => output.appendLine('Backend failed: ' + err.message));
-  serverProcess.on('exit', code => { output.appendLine('Backend exited: ' + code); serverProcess = undefined; });
+  serverProcess.on('exit', code => { output.appendLine('Backend exited: ' + code); serverProcess = undefined; backendPromise = undefined; });
   for (let i = 0; i < 30; i++) {
     await new Promise(resolve => setTimeout(resolve, 200));
     try { await request('/health'); return; } catch (_) {
@@ -161,5 +172,5 @@ function activate(context) {
     catch (err) { vscode.window.showErrorMessage(err.message); }
   }));
 }
-function deactivate() { if (serverProcess) serverProcess.kill(); }
+function deactivate() { if (serverProcess) serverProcess.kill(); backendPromise = undefined; }
 module.exports = { activate, deactivate };
