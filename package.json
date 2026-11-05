@@ -1,0 +1,77 @@
+{
+  "name": "edgemind-ai",
+  "displayName": "EdgeMind AI",
+  "description": "Local-first coding assistant with optional cloud fallback and private workspace retrieval.",
+  "version": "0.1.0",
+  "publisher": "edgemind",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onView:edgemind.chat",
+    "onCommand:edgemind.openChat"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "edgemind.openChat",
+        "title": "EdgeMind: Open Chat"
+      },
+      {
+        "command": "edgemind.indexWorkspace",
+        "title": "EdgeMind: Index Workspace"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "edgemind",
+          "title": "EdgeMind",
+          "icon": "media/edgemind.svg"
+        }
+      ]
+    },
+    "views": {
+      "edgemind": [
+        {
+          "id": "edgemind.chat",
+          "name": "AI Chat",
+          "type": "webview"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "EdgeMind",
+      "properties": {
+        "edgemind.pythonPath": {
+          "type": "string",
+          "default": "python",
+          "description": "Python interpreter with the EdgeMind dependencies installed."
+        },
+        "edgemind.allowCloud": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow sending your prompts and retrieved workspace excerpts to your configured cloud provider."
+        },
+        "edgemind.autoIndex": {
+          "type": "boolean",
+          "default": true,
+          "description": "Index supported workspace text files when opening the chat."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build:webview": "npm --prefix webview-ui run build",
+    "package": "npm run build:webview && npx vsce package",
+    "test:python": "python -m unittest discover -s tests -v"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.6.0"
+  }
+}
