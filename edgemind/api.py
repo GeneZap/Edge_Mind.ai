@@ -84,7 +84,7 @@ def serve(host='127.0.0.1', port=8765, token=None):
         def log_message(self, format, *args):
             return  # Never log prompts or snippets
 
-    server = ThreadingHTTPServer((host, port), Handler)
+    server = ThreadingHTTPServer((host, int(os.getenv('EDGEMIND_API_PORT', port))), Handler)
     print('EdgeMind loopback API listening on port', server.server_port, flush=True)
     server.serve_forever()
 
