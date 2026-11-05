@@ -1,0 +1,14 @@
+**/.git/**
+**/.github/**
+**/.venv/**
+**/node_modules/**
+**/tests/**
+**/__pycache__/**
+**/*.pyc
+webview-ui/src/**
+webview-ui/public/**
+webview-ui/node_modules/**
+webview-ui/package-lock.json
+webview-ui/tsconfig*.json
+webview-ui/vite.config.ts
+webview-ui/eslint.config.js
