@@ -12,6 +12,9 @@ class EdgeState(TypedDict, total=False):
     available_models: list[ModelCapability]
     documents: list[Evidence]
     simulate_failure: bool
+    use_real_models: bool
+    prefer_cloud: bool
+    fallback_attempted: bool
 
     plan: list[str]
     evidence: list[Evidence]
@@ -21,5 +24,4 @@ class EdgeState(TypedDict, total=False):
     recovery_action: str
     attempts: int
     status: str
-    # Reducer adds messages across nodes; each node returns only new messages.
     trace: Annotated[list[str], operator.add]
