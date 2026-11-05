@@ -31,7 +31,16 @@ def local_models():
 def model_registry():
     from .contracts import ModelCapability
     models: list[ModelCapability] = []
-    for name in local_models():
+    preferred = os.getenv('EDGEMIND_LOCAL_MODEL', '')
+    discovered = local_models()
+    # Ollama /api/tags lists embedding-only models alongside chat models.
+    chat_models = [name for name in discovered
+                   if not any(term in name.lower() for term in
+                              ('embed', 'nomic', 'bge-', 'mxbai', 'snowflake-arctic'))]
+    if preferred in chat_models:
+        chat_models.remove(preferred)
+        chat_models.insert(0, preferred)
+    for name in chat_models:
         models.append({'model_id': name, 'provider': 'local', 'device': 'LOCAL',
                        'complexities': ['simple', 'complex'], 'available': True})
     if os.getenv('EDGEMIND_CLOUD_API_KEY') and os.getenv('EDGEMIND_CLOUD_MODEL'):
